@@ -1,0 +1,26 @@
+{
+  "name": "repository-pattern",
+  "version": "1.0.0",
+  "description": "TypeScript Repository Pattern",
+  "author": "Amir Abdullin",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "start": "ts-node -r tsconfig-paths/register ./src/index.ts",
+    "migrate": "node-pg-migrate",
+    "migrate:run": "yarn node-pg-migrate up",
+    "migrate:revert": "yarn node-pg-migrate down"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.6.5",
+    "dotenv": "^16.0.0",
+    "node-pg-migrate": "^6.2.1",
+    "ts-node": "^10.7.0",
+    "tsconfig-paths": "^3.14.0",
+    "typescript": "^4.6.2"
+  },
+  "dependencies": {
+    "fastify": "^3.27.4",
+    "pg": "^8.7.3"
+  }
+}

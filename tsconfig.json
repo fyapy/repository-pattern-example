@@ -1,0 +1,23 @@
+{
+    "compileOnSave": false,
+    "compilerOptions": {
+      "target": "es2020",
+      "lib": ["es2020", "esnext.asynciterable"],
+      "baseUrl": "./src",
+      "removeComments": true,
+      "declaration": false,
+      "allowSyntheticDefaultImports": true,
+      "forceConsistentCasingInFileNames": true,
+      "moduleResolution": "node",
+      "module": "CommonJS",
+      "pretty": true,
+      "sourceMap": false,
+      "allowJs": false,
+      "noEmit": false,
+      "esModuleInterop": true,
+      "resolveJsonModule": true,
+      "strictNullChecks": true
+    },
+    "include": ["./src/**/*.ts"],
+    "exclude": ["node_modules", "dist"]
+  }
