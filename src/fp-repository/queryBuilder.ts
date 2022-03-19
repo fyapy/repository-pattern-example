@@ -1,6 +1,6 @@
 import type { AnyObject, ColumnData } from './types'
 
-export function buildMapper<T extends AnyObject>(obj: Record<keyof T, ColumnData>) {
+export function buildAliasMapper<T extends AnyObject>(obj: Record<keyof T, ColumnData>) {
   const _mapper = new Map<keyof T, string>()
 
   for (const [key, value] of Object.entries(obj)) {

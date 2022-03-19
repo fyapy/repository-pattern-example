@@ -8,4 +8,4 @@ export {
   isUniqueErr,
 } from './utils'
 export { pgRepository } from './repository'
-export { buildMapper } from './queryBuilder'
+export { buildAliasMapper } from './queryBuilder'

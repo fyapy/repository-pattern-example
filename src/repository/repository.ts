@@ -1,5 +1,5 @@
 import { Pool, PoolClient } from 'pg'
-import { buildMapper, insertValues } from './queryBuilder'
+import { buildAliasMapper, insertValues } from './queryBuilder'
 import {
   MakeAllOptional,
   BaseRepository,
@@ -13,7 +13,7 @@ export class PGRepository<T> implements BaseRepository<T, PoolClient> {
   readonly table: string
   readonly primaryKey: string
   readonly pool: Pool
-  readonly mapColumn: (col: keyof T) => string
+  readonly columnAlias: (col: keyof T) => string
   readonly cols: (...args: Array<keyof T>) => string
   readonly allColumns: string
   readonly where: (values: Partial<T>, initialIndex?: number) => string
@@ -29,20 +29,20 @@ export class PGRepository<T> implements BaseRepository<T, PoolClient> {
     primaryKey?: string
     mapping: Record<keyof T, ColumnData>
   }) {
-    const mapper = buildMapper<T>(mapping)
+    const aliasMapper = buildAliasMapper<T>(mapping)
 
     this.pool = pool
     this.table = `"${table}"`
-    this.mapColumn = mapper
+    this.columnAlias = aliasMapper
     this.primaryKey = primaryKey
 
-    this.cols = (...args: Array<keyof T>) => args.map(key => `${mapper(key)} AS "${key}"`).join(', ')
+    this.cols = (...args: Array<keyof T>) => args.map(key => `${aliasMapper(key)} AS "${key}"`).join(', ')
     this.allColumns = Object.entries(mapping).reduce((acc, [key, value]: [string, ColumnData]) => {
       if (typeof value === 'object' && value.hidden) {
         return acc
       }
 
-      const sql = `${mapper(key as keyof T)} AS "${key}"`
+      const sql = `${aliasMapper(key as keyof T)} AS "${key}"`
 
       return acc
         ? acc += `, ${sql}`
@@ -50,7 +50,7 @@ export class PGRepository<T> implements BaseRepository<T, PoolClient> {
     }, '')
     this.where = (values: Partial<T>, initialIndex = 0) => {
       const sql = Object.keys(values).reduce((acc, key, index) => {
-        const condition = `${mapper(key as keyof T)} = $${index + initialIndex + 1}`
+        const condition = `${aliasMapper(key as keyof T)} = $${index + initialIndex + 1}`
 
         return acc === ''
           ? `${acc} ${condition}`
@@ -67,7 +67,7 @@ export class PGRepository<T> implements BaseRepository<T, PoolClient> {
     const _values: any[] = []
 
     for (const key of Object.keys(value) as Array<keyof T>) {
-      _cols.push(this.mapColumn(key))
+      _cols.push(this.columnAlias(key))
       _values.push(value[key])
     }
 
@@ -91,7 +91,7 @@ export class PGRepository<T> implements BaseRepository<T, PoolClient> {
       const keys = Object.keys(value) as Array<keyof T>
 
       for (const key of keys) {
-        if (_cols.length !== keys.length) _cols.push(this.mapColumn(key))
+        if (_cols.length !== keys.length) _cols.push(this.columnAlias(key))
 
         _values.push(value[key] as any)
       }
@@ -119,7 +119,7 @@ export class PGRepository<T> implements BaseRepository<T, PoolClient> {
 
   update(id: ID, newValue: Partial<T>, tx?: PoolClient): Promise<T> {
     const sqlSet = Object.keys(newValue).reduce((acc, key, index) => {
-      const sql = `${this.mapColumn(key as keyof T)} = $${index + 2}`
+      const sql = `${this.columnAlias(key as keyof T)} = $${index + 2}`
 
       return acc
         ? `, ${sql}`

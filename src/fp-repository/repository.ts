@@ -1,5 +1,5 @@
 import { Pool, PoolClient } from 'pg'
-import { buildMapper, insertValues } from './queryBuilder'
+import { buildAliasMapper, insertValues } from './queryBuilder'
 import {
   MakeAllOptional,
   BaseRepository,
@@ -21,16 +21,16 @@ export function pgRepository<T>({
   mapping: Record<keyof T, ColumnData>
 }) {
   // constructor
-  const mapper = buildMapper<T>(mapping)
+  const aliasMapper = buildAliasMapper<T>(mapping)
 
-  const mapColumn = mapper
-  const cols = (...args: Array<keyof T>) => args.map(key => `${mapper(key)} AS "${key}"`).join(', ')
+  const columnAlias = aliasMapper
+  const cols = (...args: Array<keyof T>) => args.map(key => `${aliasMapper(key)} AS "${key}"`).join(', ')
   const allColumns = Object.entries(mapping).reduce((acc, [key, value]: [string, ColumnData]) => {
     if (typeof value === 'object' && value.hidden) {
       return acc
     }
 
-    const sql = `${mapper(key as keyof T)} AS "${key}"`
+    const sql = `${aliasMapper(key as keyof T)} AS "${key}"`
 
     return acc
       ? acc += `, ${sql}`
@@ -38,7 +38,7 @@ export function pgRepository<T>({
   }, '')
   const where = (values: Partial<T>, initialIndex = 0) => {
     const sql = Object.keys(values).reduce((acc, key, index) => {
-      const condition = `${mapper(key as keyof T)} = $${index + initialIndex + 1}`
+      const condition = `${aliasMapper(key as keyof T)} = $${index + initialIndex + 1}`
 
       return acc === ''
         ? `${acc} ${condition}`
@@ -56,7 +56,7 @@ export function pgRepository<T>({
     const _values: any[] = []
 
     for (const key of Object.keys(value) as Array<keyof T>) {
-      _cols.push(mapColumn(key))
+      _cols.push(columnAlias(key))
       _values.push(value[key])
     }
 
@@ -80,7 +80,7 @@ export function pgRepository<T>({
       const keys = Object.keys(value) as Array<keyof T>
 
       for (const key of keys) {
-        if (_cols.length !== keys.length) _cols.push(mapColumn(key))
+        if (_cols.length !== keys.length) _cols.push(columnAlias(key))
 
         _values.push(value[key] as any)
       }
@@ -108,7 +108,7 @@ export function pgRepository<T>({
 
   function update(id: ID, newValue: Partial<T>, tx?: PoolClient): Promise<T> {
     const sqlSet = Object.keys(newValue).reduce((acc, key, index) => {
-      const sql = `${mapColumn(key as keyof T)} = $${index + 2}`
+      const sql = `${columnAlias(key as keyof T)} = $${index + 2}`
 
       return acc
         ? `, ${sql}`
@@ -185,7 +185,7 @@ export function pgRepository<T>({
     table,
     primaryKey,
     allColumns,
-    mapColumn,
+    columnAlias,
     where,
     cols,
     ...({
