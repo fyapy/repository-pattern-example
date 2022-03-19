@@ -1,7 +1,8 @@
+import type { Repositories } from 'types'
 import fastify from 'fastify'
 import { connectPostgres } from 'db'
-import { fpRoutes } from 'fp-routes'
-import { routes } from 'routes'
+import * as fpUsers from 'fp-users'
+import * as users from 'users'
 
 const main = async () => {
   const app = fastify({
@@ -9,12 +10,20 @@ const main = async () => {
   })
   const pool = await connectPostgres()
 
-  app.register(routes(pool), {
+
+  const repositories: Repositories = {
+    pool,
+    userRepository: new users.UserRepository(pool),
+    fpUserRepository: fpUsers.fpUserRepository(pool),
+  }
+
+  app.register(users.setupRoutes(repositories), {
     prefix: '/users',
   })
-  app.register(fpRoutes(pool), {
+  app.register(fpUsers.setupRoutes(repositories), {
     prefix: '/fp-users',
   })
+
 
   try {
     const url = await app.listen(process.env.PORT || 8080, '0.0.0.0')

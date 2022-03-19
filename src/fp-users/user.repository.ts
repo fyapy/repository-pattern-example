@@ -1,6 +1,5 @@
-import { pgRepository } from 'fp-repository'
 import type { Pool, PoolClient } from 'pg'
-import { PGRepository, queryRow } from 'repository'
+import { pgRepository, queryRow } from 'fp-repository'
 
 export interface User {
   id: number

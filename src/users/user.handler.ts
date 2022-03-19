@@ -1,11 +1,11 @@
 import type { FastifyPluginCallback } from 'fastify'
-import type { Pool } from 'pg'
-import { UserRepository } from 'example-of-usage'
-import { isUniqueErr } from 'repository'
+import type { Repositories } from 'types'
+import { commit, isUniqueErr, rollback, startTrx } from 'repository'
 
-export const routes = (pool: Pool): FastifyPluginCallback => (fastify, otps, done) => {
-  const userRepository = new UserRepository(pool)
-
+export const setupRoutes = ({
+  pool,
+  userRepository,
+}: Repositories): FastifyPluginCallback => (fastify, otps, done) => {
   fastify.get('/next-id', async () => {
     const nextId = await userRepository.nextId()
 
@@ -44,18 +44,23 @@ export const routes = (pool: Pool): FastifyPluginCallback => (fastify, otps, don
       password: string
     }
   }>('/', async ({ body }, res) => {
+    const tx = await startTrx(pool)
     try {
       const user = await userRepository.create({
         name: body.name,
         email: body.email,
         hash: body.password,
-      })
+      }, tx)
+
+      await commit(tx)
 
       res.status(201)
       return {
         user: user ?? null,
       }
     } catch (e) {
+      await rollback(tx)
+
       if (isUniqueErr(e)) {
         res.status(400)
         return {
@@ -64,6 +69,8 @@ export const routes = (pool: Pool): FastifyPluginCallback => (fastify, otps, don
       }
 
       throw e
+    } finally {
+      tx.release()
     }
   })
 
