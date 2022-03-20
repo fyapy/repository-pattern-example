@@ -9,3 +9,22 @@ I think you have taken on a task that is too difficult for you :)
 
 Little bit about project:
 Folders/files pefiexed with `fp` the same implementation, but using functional programming.
+
+## Run project
+
+Install dependencies:
+```sh
+yarn
+```
+
+Edit `DATABASE_URL` in .env file.
+
+Run migrations:
+```sh
+yarn migrate:run
+```
+
+Run project:
+```sh
+yarn start
+```
