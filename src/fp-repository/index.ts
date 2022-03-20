@@ -9,3 +9,4 @@ export {
 } from './utils'
 export { pgRepository } from './repository'
 export { buildAliasMapper } from './queryBuilder'
+export * from './types'

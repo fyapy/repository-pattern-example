@@ -6,15 +6,11 @@ export type ColumnData = string | {
   hidden?: boolean
 }
 
-export type MakeAllOptional<T extends AnyObject> = {
-  [K in keyof T]?: T[K]
-}
-
 export type ID = string | number
 
 interface Writer<T, C> {
-  create(value: MakeAllOptional<T>, tx?: C): Promise<T>
-  createMany(values: MakeAllOptional<T>[], tx?: C): Promise<T[]>
+  create(value: Partial<T>, tx?: C): Promise<T>
+  createMany(values: Partial<T>[], tx?: C): Promise<T[]>
   update(id: ID, newValue: Partial<T>, tx?: C): Promise<T>
   delete(id: ID, tx?: C): Promise<boolean>
 }

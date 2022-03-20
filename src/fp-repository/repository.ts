@@ -1,7 +1,6 @@
 import { Pool, PoolClient } from 'pg'
 import { buildAliasMapper, insertValues } from './queryBuilder'
 import {
-  MakeAllOptional,
   BaseRepository,
   FindOptions,
   ID,
@@ -51,7 +50,7 @@ export function pgRepository<T>({
 
 
   // methods
-  async function create(value: MakeAllOptional<T>, tx?: PoolClient): Promise<T> {
+  async function create(value: Partial<T>, tx?: PoolClient): Promise<T> {
     const _cols: string[] = []
     const _values: any[] = []
 
@@ -72,7 +71,7 @@ export function pgRepository<T>({
     return row
   }
 
-  async function createMany(values: MakeAllOptional<T>[], tx?: PoolClient): Promise<T[]> {
+  async function createMany(values: Partial<T>[], tx?: PoolClient): Promise<T[]> {
     const _cols: string[] = []
     const _values: any[][] = []
 

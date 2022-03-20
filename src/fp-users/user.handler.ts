@@ -29,7 +29,7 @@ export const setupRoutes = ({
     Params: { id: string }
   }>('/:id', async ({ params }) => {
     const user = await userRepository.findOne(params.id, {
-      select: ['id', 'name', 'email']
+      select: ['id', 'name', 'email'],
     })
 
     return {
