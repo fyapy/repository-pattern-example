@@ -1,4 +1,4 @@
-In this example project explain how to implement Repository Pattern with low-level database driver. Created specially for [article on Dev.to](https://dev.to/fyapy/repository-pattern-with-typescript-and-native-postgresql-driver) :)
+In this example project explain how to implement Repository Pattern with low-level database driver. Created specially for [article on Dev.to](https://dev.to/fyapy/fully-featured-repository-pattern-with-typescript-and-native-postgresql-driver-4f2j) :)
 
 **I strongly ask you to make sure before using this solution in production in such things as:**
 - You don't have good open source ORM/QueryBuilder/Library alternatives for your database.
