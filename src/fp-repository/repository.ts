@@ -109,8 +109,8 @@ export function pgRepository<T>({
     const sqlSet = Object.keys(newValue).reduce((acc, key, index) => {
       const sql = `${columnAlias(key as keyof T)} = $${index + 2}`
 
-      return acc
-        ? `, ${sql}`
+      return acc !== ''
+        ? `${acc}, ${sql}`
         : sql
     }, '')
 

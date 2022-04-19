@@ -120,8 +120,8 @@ export class PGRepository<T> implements BaseRepository<T, PoolClient> {
     const sqlSet = Object.keys(newValue).reduce((acc, key, index) => {
       const sql = `${this.columnAlias(key as keyof T)} = $${index + 2}`
 
-      return acc
-        ? `, ${sql}`
+      return acc !== ''
+        ? `${acc}, ${sql}`
         : sql
     }, '')
 
