@@ -10,7 +10,7 @@ import { query, queryRow } from './utils'
 
 export function pgRepository<T>({
   pool,
-  table,
+  table: _table,
   mapping,
   primaryKey = 'id',
 }: {
@@ -20,6 +20,7 @@ export function pgRepository<T>({
   mapping: Record<keyof T, ColumnData>
 }) {
   // constructor
+  const table = `"${_table}"`
   const aliasMapper = buildAliasMapper<T>(mapping)
 
   const columnAlias = aliasMapper
